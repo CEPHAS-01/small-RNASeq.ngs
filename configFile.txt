@@ -1,0 +1,182 @@
+#!!!!!!! IMPORTANT INFORMATION   !!!!!!!!!!!!!!!!!!
+# 1.	Ensure the following are followed strictly and avoid spaces or special characters in the filenames
+# 2.	Ensure there is no space between the "=" sign and the value	[ e.g USE variable=value   NOT variable = value ]
+# 3.	Input files are fastq or gz format
+# 4.	Ensure there are no spaces in the file and folder names
+
+#FileValidation #Check input files for i. existence ii. non-emptiness iii. correct extension (FASTA= .fasta | .fa) and iv. read the first lines to confirm content
+#############################################################################################################################################################
+
+## Define a string to be used as the ID for this analysis
+analysisID=ArabVir
+
+## Specify the number of samples to be analyzed
+numSamples=3
+
+## For a computer with multiple cores, specify the number of cores you would like to use for some of the analysis steps that could use multiple cores e.g. Bowtie mapping
+numCores=12
+
+## Define whether you would like to keep the sequence alignment map (SAM) files from the various reads mapping steps to be accessible for further analysis
+## [yes / no]
+keepMapFiles=no
+
+## Declare whether to delete the intermediate files from the reads pre-processing and filtering
+## [yes / no]
+removeIntermediateFolder=no
+
+##Define the aligner to be used for sequence mapping [Only Bowtie for now]
+mappingSoftware=Bowtie
+
+
+####	NGS READS PRE-PROCESSING	####################################################################################################################
+## Was the HD protocol used for the library preparation stage of the samples (Default is no). 
+## Refer to the publication Olagunju et al. (2022) for further information on this.
+## [yes / no]
+HDprotocol=yes
+
+## Specify the adapter sequence in the sequence reads library
+adapterSequence=TGGAATTCTCGGGTGCCAAGGAACT
+
+## Define the minimum length of sequences to keep for further analysis
+min_length=18
+
+## Define the maximum length of sequences to keep for further analysis
+max_length=35
+
+## Define the frequency threshold of reads. Keep only reads with at least freq_cutoff in the sample for further analysis
+freq_cutoff=5
+
+####	sRNA READS FILTERING	####################################################################################################################
+## Define the already known sequences you would like to exclude from this analysis e.g. some conserved sRNAs, sequences from Rfam etc.
+
+## Specify whether you have sequences to exclude from this analysis
+## [yes / no]
+mapToRfam=yes
+
+## State the name of the multi-fasta file containing the sequences to be excluded from the analysis. Ensure that this file is in the "data" directory
+referenceRfam=Rfam_v12.fa
+
+## specify the number of allowed mismatched for mapping to these exclusion sequences								
+RfamMismatch=0
+
+## specify explicitly with this flag to exclude sequences from this exclusion file from the samples
+## [yes / no]
+excludeRfam=yes
+
+####	HOST MAPPING	####################################################################################################################
+## Indicate whether you would like to map the reads to the host reference sequence
+## [yes / no]
+mapToReference=yes
+
+## specify the file name of the host reference sequence in the "data" directory
+referenceGenome=TAIR10_chr_all_renamed.fa
+
+## State the number of allowed nucleotide mismatches between the query and target sequence
+HostMismatch=2
+
+## state whether to keep the sequence alignment map (SAM) files of the host mapping for further downstream analysis
+## [yes / no]
+keepHostMapFiles=no
+
+
+####	PATHOGEN MAPPING	####################################################################################################################
+
+## specify whether pathogen mapping should be carried out in this analysis
+## [yes / no]
+microbeAnalysis=yes
+
+## specify the file name of the pathogen reference sequence in the "data" directory. This could be a single reference genome or a repository of pathogen sequences.
+microbeReference=CucumberCauliflowerMV.fa
+
+## state the number of allowed mismatches between the query and target sequence
+microbeMismatch=2
+
+## provide the accession ID of the pathogen of interest e.g. EU685325 for African Cassava Mosaic Virus(ACMV), especially when a pathogen repository is being used as a reference sequence and not the genome of a single pathogen
+subjectMicrobe=
+
+## state whether to keep the sequence alignment map (SAM) files from this analysis for further downstream analysis
+keepVirMapFiles=no
+
+
+####	CONSERVED SMALL RNAs ANALYSIS	####################################################################################################################
+
+## specify if interested in identifying conserved miRNAs
+## [yes / no]
+mirBaseAnalysis=yes
+
+## secify the file name of conserved miRNAs of interest either from mature sequences in miRBase or another user-defined list from other repositories in multi-fasts format
+mirBaseReference=mature-22.fa
+
+## specify the number of acceptable mismatches between the query and target sequences
+mirBaseMismatch=2
+
+## state whether to keep the sequence alignment map (SAM) files from the mapping
+## [yes / no]
+keepMirMapFiles=no
+
+## specify the name of the host from miRBase (if using mature sequences from miRBase) or the name of the host from the repository being used e.g 'Manihot esculenta', 'Arabidopsis thaliana', etc.
+subjectOrganism='Arabidopsis thaliana'
+
+## specify the three-letter code of the host e.g. mes, ath etc.
+subjectOrganismCode=ath
+
+
+####	DIFFERENTIAL EXPRESSION ANALYSIS	####################################################################################################################
+## specify whether differential expression analysis is desired
+## [yes / no]
+edgeRAnalysis=yes
+
+## define a tag for the experimental conditions e.g. Mock, Infected etc
+exp1=Inf
+exp2=Mock
+
+## specify whether the samples are replicated or otherwise
+## [yes / no]
+samplesReplicated=yes
+
+## state the number of replicates of sample 1 and sample 2
+numRep=2
+
+## define the cut-off p-value for edgeR e.g. 0.05, 0.01 etc
+pValEdgeR=0.05
+
+##Retain genes with at least "readCutoff" reads per million in "readSampleCutoff" samples
+## e.g. retain only genes with at least 5 reads per million in 2 samples: readCutoff = 5; readSampleCutoff = 2.	
+readCutoff=10                                             
+readSampleCutoff=2
+
+## define the Fold change FC and p-value parameters for differentially expressed reads									
+## genes with absolute fold change values of at least "logFC" and p-value not less than "pVal" are to be considered differentially expressed
+logFC=1.5
+pVal=0.05
+
+####	NOVEL sRNA PREDICTION (with mirDeep-P)	####################################################################################################################
+## mirDeepP takes a parameter - the estimated miRNA family size (mirFamilySize) for the organism - a sample figure is 35. (users are referred to the mirDeepP manual for further explanation)
+
+## specify whether to carry out novel sRNA prediction
+## [yes / no]
+mirdeepAnalysis=yes
+
+## specify the file name of the host reference sequence in the "data" folder
+mirReferenceSequence=TAIR10_chr_all_renamed.fa
+
+## specify the file name of the host annotation file in the "data" folder
+mirAnnotationFile=Araport11_GFF3_genes_transposons.Jan032022_2.gff
+
+## specify the file name of the host genome chromosome length file in the "data" folder
+mirChromosomeLength=chrom_length.txt
+
+## specify the largest known small RNA family size of the host
+mirFamilySize=35
+
+## specify the length of the sequence flanking the pre-cursor for hairpin secondary structure prediction
+flankingSequenceLength=250
+
+## state whether to keep the intermediate files produced by mirDeep-P
+## [yes / no]
+retainMirDeepIntermediateFiles=no
+
+####	OUTPUT PLOTS	####################################################################################################################
+##PLOTS - specify the output file format for the plots produced
+## [pdf / png]
+plotFormat=png
